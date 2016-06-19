@@ -59,7 +59,7 @@ err_data:
 
 
 char*
-list_print(node_t *root, int (print_payload)(void*, char*))
+list_print(node_t *root, int (*print_payload)(void*, char*))
 {
     size_t curr_buff_size = LIST_PRINT_BUFF_SIZE;
     char *buff = (char*)malloc(sizeof(char)*LIST_PRINT_BUFF_SIZE);
@@ -72,7 +72,7 @@ list_print(node_t *root, int (print_payload)(void*, char*))
     size_t buff_ptr = 0;
     while(root != NULL)
     {
-        written =  print_payload(root->data->payload, buff + buff_ptr);
+        written =  (*print_payload)(root->data->payload, buff + buff_ptr);
         if(written == -1)
         {
             free(buff);
@@ -110,7 +110,7 @@ list_destroy(node_t *root)
     /* root might not be the root of the list. In this case, set the next pointer
      * of the previous node to NULL as root will be freed */
     if(root->prev != NULL)
-        root->prev->next = NULL
+        root->prev->next = NULL;
 
     while(root != NULL)
     {
@@ -120,7 +120,6 @@ list_destroy(node_t *root)
         free(root);
         root = next;
     }
-    return EXIT_SUCCESS;
 }
 
 /**
