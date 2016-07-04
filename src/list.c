@@ -7,6 +7,19 @@
 #define LIST_PRINT_BUFF_SIZE          16
 #define REALLOC_THRESHOLD    8
 
+
+/**
+ * @brief Frees a node and associated dynamically allocated memory
+ */
+void 
+free_node(node_t* ptr_node)
+{
+    free(ptr_node->data->payload);
+    free(ptr_node->data);
+    free(ptr_node);
+}
+
+
 /* Initializes a new root node */
 node_t*
 list_init(void *payload, size_t size)
