@@ -32,6 +32,7 @@ LDLIBS_TESTS = -lads
 all: libads.so
 
 libads.so: $(OBJECTS)
+	@install -d bin -m 755
 	$(CC) $(OBJECTS) -o bin/$@ $(LDLIBS) $(LDFLAGS) $(CFLAGS)
 
 %.o: %.cc
