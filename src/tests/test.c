@@ -20,33 +20,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __LIST_H__
-#define __LIST_H__
+#include "list_test.h"
+#include "heap_test.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+int main()
+{
 
-typedef struct {
-    void *payload;
-    size_t size;
-} data_t;
+    test_list_init_creates_list_with_one_node();
+    test_list_insert_at_end_appends();
+    test_list_len_returns_correct_length();
+    test_list_get_returns_correct_value();
+    test_list_del_deletes_root();
+    test_list_del_deletes_at_the_end();
+    test_list_del_deletes_in_the_middle();
+    test_heap_init_returns_heap_with_one_element();
+    return 0;
 
-typedef struct node_t_internal {
-    data_t *data;
-    struct node_t_internal *next;
-    struct node_t_internal *prev;
-} node_t;
-
-
-node_t *list_init(void *payload, size_t size);
-void list_destroy(node_t *root);
-char *list_print(node_t *root, int(print_payload)(void*, char *));
-size_t list_len(node_t *root);
-node_t* list_insert(node_t* ptr_root, void *payload, size_t size, size_t pos);
-void* list_get(node_t* ptr_root, size_t pos);
-node_t* list_del(node_t* ptr_root, void* payload, size_t size);
-node_t* list_search(node_t* ptr_root, void* payload, size_t size);
-
-#endif
-
+}

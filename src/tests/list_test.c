@@ -165,16 +165,3 @@ test_list_del_deletes_in_the_middle()
 
     list_destroy(ptr_root);
 }
-
-int 
-main(int argc, char *argv[])
-{
-    test_list_init_creates_list_with_one_node();
-    test_list_insert_at_end_appends();
-    test_list_len_returns_correct_length();
-    test_list_get_returns_correct_value();
-    test_list_del_deletes_root();
-    test_list_del_deletes_at_the_end();
-    test_list_del_deletes_in_the_middle();
-    return 0;
-}

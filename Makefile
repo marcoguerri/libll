@@ -24,7 +24,7 @@ SOURCES_TESTS := $(shell find ./src/tests -name "*.c" -print)
 OBJECTS := $(SOURCES:.c=.o)
 OBJECTS_TESTS := $(SOURCES_TESTS:.c=.o)
 
-CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -Isrc -Isrc/tests
+CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -Isrc -Isrc/tests -g
 LDFLAGS = -shared
 LDFLAGS_TESTS = -Lbin
 LDLIBS_TESTS = -lads

@@ -1,9 +1,12 @@
 ### libads ###
-libads is a library which implements commonly used data structures and algorithms
+libads implements commonly used data structures and algorithms.
 
-This library implements the following data structures:
+This following data structures are supported:
 
-  * Double linked list
+  * Doubly linked list
+  * Max-heap and min-heap
+
+The structures are currently not thread safe.
 
 
 ### License ###
