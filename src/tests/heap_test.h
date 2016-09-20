@@ -26,6 +26,7 @@
 #include "heap.h"
 
 void test_heap_init_returns_heap_with_one_element();
-
+void test_heap_init_correctly_set_first_element();
+void test_heap_get_returns_null_beyond_fill_level();
 #endif
 

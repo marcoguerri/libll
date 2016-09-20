@@ -33,7 +33,23 @@ void test_heap_init_returns_heap_with_one_element()
 
     int el = 10;
     heap_t* heap = heap_init(&el, sizeof(int));
+    _assert(heap->fill == 1);
+}
 
-    _assert(heap != NULL && heap->fill == 1);
 
+void test_heap_init_correctly_sets_first_element()
+{
+
+    int el = 10;
+    heap_t* heap = heap_init(&el, sizeof(int));
+    _assert(memcmp(heap_get(heap,0), &el, sizeof(int)) == 0);
+}
+
+
+void test_heap_get_returns_null_beyond_fill_level()
+{
+
+    int el = 10;
+    heap_t* heap = heap_init(&el, sizeof(int));
+    _assert(heap_get(heap, 1) == NULL);
 }
