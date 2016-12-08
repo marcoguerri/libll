@@ -37,7 +37,7 @@ void
 test_list_init_creates_list_with_one_node()
 {
     int el = 100;
-    node_t *ptr_root =  list_init(&el, sizeof(int));
+    list_node_t *ptr_root =  list_init(&el, sizeof(int));
     _assert(ptr_root != NULL && 
             *((int*)ptr_root->data->payload) == 100 &&
             ptr_root->next == NULL &&
@@ -48,12 +48,15 @@ test_list_init_creates_list_with_one_node()
 void 
 test_list_insert_at_end_appends()
 {
-    int el = 0;
-    size_t i;
-    char *test_result = "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 ";
+    int el = 0, num_elements = 20, str_len = 0;
+    uint8_t i;
+    char test_result[512];
 
-    node_t *ptr_root =  list_init(&el, sizeof(int));
-    for(i = 1; i < 20; ++i)
+    for(i = 0; i < num_elements; ++i)
+        str_len += snprintf(test_result + str_len, sizeof(test_result) - str_len, "%d ", i);
+
+    list_node_t *ptr_root =  list_init(&el, sizeof(int));
+    for(i = 1; i < num_elements; ++i)
         ptr_root = list_insert(ptr_root, &i, sizeof(int), i);
     
     char *list_printed = list_print(ptr_root, print_integer_payload);
@@ -73,7 +76,7 @@ test_list_len_returns_correct_length()
     if(list_len(NULL) != 0)
         ++num_err;
     
-    node_t *ptr_root =  list_init(&el, sizeof(int));
+    list_node_t *ptr_root =  list_init(&el, sizeof(int));
     if(list_len(ptr_root) != 1)
         goto fail;
 
@@ -100,7 +103,7 @@ void test_list_get_returns_correct_value()
     int el = 0;
     uint64_t i = 0;
     
-    node_t *ptr_root =  list_init(&el, sizeof(int));
+    list_node_t *ptr_root =  list_init(&el, sizeof(int));
 
     for(i = 1; i < 100; ++i)
         ptr_root = list_insert(ptr_root, &i, sizeof(int), i);
@@ -125,7 +128,7 @@ void
 test_list_del_deletes_root()
 {
     int el = 100;
-    node_t *ptr_root =  list_init(&el, sizeof(int));
+    list_node_t *ptr_root =  list_init(&el, sizeof(int));
     ptr_root = list_del(ptr_root, &el, sizeof(int));
     _assert(ptr_root == NULL && list_len(ptr_root) == 0);
 }
@@ -136,7 +139,7 @@ test_list_del_deletes_at_the_end()
 {
 
     int el1 = 100, el2 = 102, el3 = 102;
-    node_t *ptr_root =  list_init(&el1, sizeof(int));
+    list_node_t *ptr_root =  list_init(&el1, sizeof(int));
     ptr_root = list_insert(ptr_root, &el2, sizeof(int), list_len(ptr_root));
     ptr_root = list_insert(ptr_root, &el3, sizeof(int), list_len(ptr_root));
     
@@ -154,7 +157,7 @@ test_list_del_deletes_in_the_middle()
 {
 
     int el1 = 100, el2 = 102, el3 = 102;
-    node_t *ptr_root =  list_init(&el1, sizeof(int));
+    list_node_t *ptr_root =  list_init(&el1, sizeof(int));
     ptr_root = list_insert(ptr_root, &el2, sizeof(int), list_len(ptr_root));
     ptr_root = list_insert(ptr_root, &el3, sizeof(int), list_len(ptr_root));
     
