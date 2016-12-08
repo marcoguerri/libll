@@ -23,6 +23,8 @@
 #ifndef __HEAP_H__
 #define __HEAP_H__
 
+#define HEAP_MAX 0
+#define HEAP_MIN 1
 
 typedef struct {
     void *payload;
@@ -34,6 +36,7 @@ typedef struct {
     size_t size;
     /* Fillup level of the heap */
     size_t fill;
+    uint8_t heap_type;
 } heap_t;
 
 heap_t* heap_init(void *payload, size_t size );
