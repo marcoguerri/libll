@@ -199,5 +199,16 @@ err:
 }
 
 
+void 
+heap_heapify(uint32_t index, int8_t (*heap_payload_compare)(void*, void*))
+{
+
+}
+
+
+void
+heap_build(heap_t* heap)
+{
+
+}
  
-list_insert(list_node_t* ptr_root, void *payload, size_t size, size_t pos)

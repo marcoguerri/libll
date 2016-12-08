@@ -120,7 +120,8 @@ list_print(list_node_t *root, int (*print_payload)(void*, char*))
             char *new_buff = (char*)realloc(buff, sizeof(char)*(curr_buff_size*2));
             if(new_buff == NULL) 
             {
-                free(buff); /* Old buffer was still allocated */
+                /* Old buffer has not been freed */
+                free(buff); 
                 perror("realloc");
                 return NULL;
             }

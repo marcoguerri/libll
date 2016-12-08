@@ -33,9 +33,9 @@ int main()
     test_list_del_deletes_root();
     test_list_del_deletes_at_the_end();
     test_list_del_deletes_in_the_middle();
-    test_heap_init_returns_heap_with_one_element();
-    test_heap_init_correctly_sets_first_element();
-    test_heap_get_returns_null_beyond_fill_level();
+    //test_heap_init_returns_heap_with_one_element();
+    //test_heap_init_correctly_sets_first_element();
+    //test_heap_get_returns_null_beyond_fill_level();
     return 0;
 
 }

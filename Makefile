@@ -19,8 +19,12 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-SOURCES := $(shell find . -path ./src/tests -prune -o -name "*.c" -print)
-SOURCES_TESTS := $(shell find ./src/tests -name "*.c" -print)
+#SOURCES := $(shell find . -path ./src/tests -prune -o -name "*.c" -print)
+SOURCES := ./src/list.c 
+
+#SOURCES_TESTS := $(shell find ./src/tests -name "*.c" -print)
+SOURCES_TESTS := ./src/tests/list_test.c ./src/tests/test.c
+
 OBJECTS := $(SOURCES:.c=.o)
 OBJECTS_TESTS := $(SOURCES_TESTS:.c=.o)
 
