@@ -34,7 +34,7 @@
  * @brief Frees a node and associated dynamically allocated memory
  */
 void 
-free_node(node_t* ptr_node)
+free_node(list_node_t* ptr_node)
 {
     free(ptr_node->data->payload);
     free(ptr_node->data);
@@ -43,13 +43,13 @@ free_node(node_t* ptr_node)
 
 
 /* Initializes a new root node */
-node_t*
+list_node_t*
 list_init(void *payload, size_t size)
 {
     if(payload == NULL || size <= 0)
         return NULL;
 
-    data_t *ptr_data = (data_t*)malloc(sizeof(data_t));
+    list_data_t *ptr_data = (list_data_t*)malloc(sizeof(list_data_t));
     if(ptr_data == NULL)
     {
         perror("malloc");
@@ -66,7 +66,7 @@ list_init(void *payload, size_t size)
 
     memcpy(ptr_data->payload, payload, size);
 
-    node_t *ptr_node = (node_t*)malloc(sizeof(node_t));
+    list_node_t *ptr_node = (list_node_t*)malloc(sizeof(list_node_t));
     if(ptr_node == NULL) 
     {
         perror("malloc");
@@ -94,7 +94,7 @@ err_data:
 
 
 char*
-list_print(node_t *root, int (*print_payload)(void*, char*))
+list_print(list_node_t *root, int (*print_payload)(void*, char*))
 {
     size_t curr_buff_size = LIST_PRINT_BUFF_SIZE;
     char *buff = (char*)malloc(sizeof(char)*LIST_PRINT_BUFF_SIZE);
@@ -140,7 +140,7 @@ list_print(node_t *root, int (*print_payload)(void*, char*))
  * All the nodes following root, including root, will be freed
  */
 void
-list_destroy(node_t *root)
+list_destroy(list_node_t *root)
 {
     /* root might not be the root of the list. In this case, set the next pointer
      * of the previous node to NULL as root will be freed */
@@ -149,7 +149,7 @@ list_destroy(node_t *root)
 
     while(root != NULL)
     {
-        node_t* next = root->next;
+        list_node_t* next = root->next;
         free(root->data->payload);
         free(root->data);
         free(root);
@@ -163,7 +163,7 @@ list_destroy(node_t *root)
  * counters.
  */
 size_t 
-list_len(node_t* root)
+list_len(list_node_t* root)
 {
     size_t len = 0;
     while(root != NULL)
@@ -180,13 +180,13 @@ list_len(node_t* root)
  * @return Pointer to the new list root or NULL upon failure. When returning
  * NULL the old list is NOT destroyed.
  */
-node_t*
-list_insert(node_t* ptr_root, void *payload, size_t size, size_t pos)
+list_node_t*
+list_insert(list_node_t* ptr_root, void *payload, size_t size, size_t pos)
 {
     if(ptr_root == NULL || payload == NULL || pos > list_len(ptr_root))
         return NULL;
     
-    node_t *ptr_prev = NULL, *ptr_pos = ptr_root;
+    list_node_t *ptr_prev = NULL, *ptr_pos = ptr_root;
     while(pos > 0)
     {
         ptr_prev = ptr_pos;
@@ -197,8 +197,8 @@ list_insert(node_t* ptr_root, void *payload, size_t size, size_t pos)
         --pos;
     }
 
-    node_t *ptr_node = (node_t*)malloc(sizeof(node_t));
-    data_t* ptr_data = (data_t*)malloc(sizeof(data_t));
+    list_node_t *ptr_node = (list_node_t*)malloc(sizeof(list_node_t));
+    list_data_t* ptr_data = (list_data_t*)malloc(sizeof(list_data_t));
     ptr_data->payload = (void*)malloc(size);
 
     
@@ -254,10 +254,10 @@ err_node_data:
  * @param size Size of the payload
  * @return The pointer to the new list
  */
-node_t*
-list_del(node_t* ptr_root, void* payload, size_t size)
+list_node_t*
+list_del(list_node_t* ptr_root, void* payload, size_t size)
 {
-    node_t *ptr_node = ptr_root;
+    list_node_t *ptr_node = ptr_root;
     while(ptr_node != NULL) 
     {
         if(memcmp(ptr_node->data->payload, payload, size) == 0)
@@ -269,7 +269,7 @@ list_del(node_t* ptr_root, void* payload, size_t size)
                 {
                    /* First node is followed by at least one more node */
                    ptr_node->next->prev = NULL;
-                   node_t* temp = ptr_node->next;
+                   list_node_t* temp = ptr_node->next;
                    free_node(ptr_node);
                    return temp;
                 }
@@ -315,8 +315,8 @@ list_del(node_t* ptr_root, void* payload, size_t size)
  * @return Pointer to the first node matching the payload or NULL if payload
  * is not found
  */
-node_t*
-list_search(node_t* ptr_root, void* payload, size_t size)
+list_node_t*
+list_search(list_node_t* ptr_root, void* payload, size_t size)
 {
 
     while(ptr_root != NULL)
@@ -338,7 +338,7 @@ list_search(node_t* ptr_root, void* payload, size_t size)
  * failure
  */
 void*
-list_get(node_t *ptr_root, size_t pos)
+list_get(list_node_t *ptr_root, size_t pos)
 {
 
     if(ptr_root == NULL || pos >= list_len(ptr_root))
