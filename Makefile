@@ -18,7 +18,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-all clean libads.so:
+all clean libads.so libads.a:
 	$(MAKE) -C src $@
 
 tests run_tests:

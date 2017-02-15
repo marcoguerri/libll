@@ -28,8 +28,12 @@ LDFLAGS = -shared
 
 all: libads.so
 
+libads.a: $(OBJECTS)
+	install -m 755 -d ../lib
+	ar rcs ../lib/$@ $(OBJECTS)
+
 libads.so: $(OBJECTS)
-	install -d 755 ../lib
+	install -m 755 -d ../lib
 	$(CC) $(OBJECTS) -o ../lib/$@ $(LDLIBS) $(LDFLAGS) $(CFLAGS)
 
 %.o: %.cc
@@ -38,5 +42,6 @@ libads.so: $(OBJECTS)
 clean:
 	rm -f $(OBJECTS)
 	rm -f ../lib/libads.so
+	rm -f ../lib/libads.a
 
 .PHONY: clean
