@@ -18,8 +18,24 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-all clean libads.so:
-	$(MAKE) -C src $@
 
-tests run_tests:
-	$(MAKE) -C test $@
+#SOURCES := $(shell find . -path ./src/tests -prune -o -name "*.c" -print)
+SOURCES := list.c 
+
+OBJECTS := $(SOURCES:.c=.o)
+CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -I../include
+LDFLAGS = -shared
+
+all: libads.so
+
+libads.so: $(OBJECTS)
+	$(CC) $(OBJECTS) -o ../lib/$@ $(LDLIBS) $(LDFLAGS) $(CFLAGS)
+
+%.o: %.cc
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+clean:
+	rm -f $(OBJECTS)
+	rm -f ../lib/libads.so
+
+.PHONY: clean

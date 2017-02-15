@@ -1,7 +1,7 @@
 ### libads ###
 libads implements commonly used data structures and algorithms.
 
-This following data structures are supported:
+The following data structures are supported:
 
   * Doubly linked list
   * Max-heap and min-heap
