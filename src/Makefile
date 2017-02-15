@@ -29,6 +29,7 @@ LDFLAGS = -shared
 all: libads.so
 
 libads.so: $(OBJECTS)
+	install -d 755 ../lib
 	$(CC) $(OBJECTS) -o ../lib/$@ $(LDLIBS) $(LDFLAGS) $(CFLAGS)
 
 %.o: %.cc
