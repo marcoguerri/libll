@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "list.h"
+#include "common.h"
 
 #define ADS_PRINT_BUFF_SIZE             16
 #define ADS_REALLOC_THRESHOLD           8
@@ -186,7 +187,7 @@ ads_list_node_t*
 ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t pos)
 {
 
-    if(ptr_root == NULL)
+    if(ads_unlikely(ptr_root == NULL))
         return ads_list_init(payload, size);
     
     if(payload == NULL || pos > ads_list_len(ptr_root))
