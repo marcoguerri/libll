@@ -177,6 +177,7 @@ ads_list_len(ads_list_node_t* root)
 
 /*
  * @brief Inserts a new node in position pos starting from ptr_root. 
+ * @param ptr_root Pointer to the root of the list. If null, a new list is initialized
  * @param pos Position (0-indexed) where to add the new node.
  * @return Pointer to the new list root or NULL upon failure. When returning
  * NULL the old list is NOT destroyed.
@@ -184,7 +185,11 @@ ads_list_len(ads_list_node_t* root)
 ads_list_node_t*
 ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t pos)
 {
-    if(ptr_root == NULL || payload == NULL || pos > ads_list_len(ptr_root))
+
+    if(ptr_root == NULL)
+        return ads_list_init(payload, size);
+    
+    if(payload == NULL || pos > ads_list_len(ptr_root))
         return NULL;
     
     ads_list_node_t *ptr_prev = NULL, *ptr_pos = ptr_root;
@@ -355,4 +360,3 @@ ads_list_get(ads_list_node_t *ptr_root, size_t pos)
     return ptr_root->data->payload;
 
 }
-

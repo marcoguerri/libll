@@ -45,6 +45,20 @@ test_list_init_creates_list_with_one_node()
     ads_list_destroy(ptr_root);
 }
 
+void
+test_list_insert_null_list_creates_list()
+{
+    int el = 101;
+    ads_list_node_t *ptr_root =  ads_list_insert(NULL, &el, sizeof(int), 0);
+    
+    _assert(ptr_root != NULL && 
+            *((int*)ptr_root->data->payload) == 101 &&
+            ptr_root->next == NULL &&
+            ptr_root->prev == NULL);
+    
+    ads_list_destroy(ptr_root);
+}
+
 void 
 test_list_insert_at_end_appends()
 {
@@ -70,7 +84,7 @@ test_list_insert_at_end_appends()
 void
 test_list_len_returns_correct_length()
 {
-    int el = 100;
+    int el = 102;
     uint8_t num_err = 0, i = 0;
     
     if(ads_list_len(NULL) != 0)
