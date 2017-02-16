@@ -30,23 +30,23 @@
 typedef struct {
     void *payload;
     size_t size;
-} list_data_t;
+} ads_list_data_t;
 
-typedef struct list_node_t_internal {
-    list_data_t *data;
-    struct list_node_t_internal *next;
-    struct list_node_t_internal *prev;
-} list_node_t;
+typedef struct ads_list_node_t_internal {
+    ads_list_data_t *data;
+    struct ads_list_node_t_internal *next;
+    struct ads_list_node_t_internal *prev;
+} ads_list_node_t;
 
 
-list_node_t *list_init(void *payload, size_t size);
-void list_destroy(list_node_t *root);
-char *list_print(list_node_t *root, int(print_payload)(void*, char *));
-size_t list_len(list_node_t *root);
-list_node_t* list_insert(list_node_t* ptr_root, void *payload, size_t size, size_t pos);
-void* list_get(list_node_t* ptr_root, size_t pos);
-list_node_t* list_del(list_node_t* ptr_root, void* payload, size_t size);
-list_node_t* list_search(list_node_t* ptr_root, void* payload, size_t size);
+ads_list_node_t *ads_list_init(void *payload, size_t size);
+void ads_list_destroy(ads_list_node_t *root);
+char *ads_list_print(ads_list_node_t *root, int(print_payload)(void*, char *));
+size_t ads_list_len(ads_list_node_t *root);
+ads_list_node_t* ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t pos);
+void* ads_list_get(ads_list_node_t* ptr_root, size_t pos);
+ads_list_node_t* ads_list_del(ads_list_node_t* ptr_root, void* payload, size_t size);
+ads_list_node_t* ads_list_search(ads_list_node_t* ptr_root, void* payload, size_t size);
 
 #endif
 
