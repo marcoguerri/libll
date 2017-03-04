@@ -23,7 +23,7 @@
 SOURCES := list.c 
 
 OBJECTS := $(SOURCES:.c=.o)
-CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -I../include
+CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -I../include -g
 LDFLAGS = -shared
 
 all: libads.so

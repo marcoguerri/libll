@@ -20,33 +20,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __LIST_H__
-#define __LIST_H__
+#ifndef __HEAP_H__
+#define __HEAP_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+#define ADS_HEAP_MAX 0
+#define ADS_HEAP_MIN 1
+
+#include <libads/list.h>
 
 typedef struct {
     void *payload;
-    size_t size;
-} ads_list_data_t;
+} ads_heap_node_t;
 
-typedef struct ads_list_node_t_internal {
-    ads_list_data_t *data;
-    struct ads_list_node_t_internal *next;
-    struct ads_list_node_t_internal *prev;
-} ads_list_node_t;
+typedef struct {
+    ads_list_t* heap_data;
+    size_t heap_size;
+    size_t element_size;
+    uint8_t heap_type;
+} ads_heap_t;
 
-
-ads_list_node_t *ads_list_init(void *payload, size_t size);
-void ads_list_destroy(ads_list_node_t *root);
-char *ads_list_print(ads_list_node_t *root, int(print_payload)(void*, char *));
-size_t ads_list_len(ads_list_node_t *root);
-ads_list_node_t* ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t pos);
-void* ads_list_get(ads_list_node_t* ptr_root, size_t pos);
-ads_list_node_t* ads_list_del(ads_list_node_t* ptr_root, void* payload, size_t size);
-ads_list_node_t* ads_list_search(ads_list_node_t* ptr_root, void* payload, size_t size);
+ads_heap_t* ads_heap_init(void *payload, size_t size );
 
 #endif
-

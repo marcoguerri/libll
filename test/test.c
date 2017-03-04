@@ -27,7 +27,6 @@ int main()
 {
 
     test_list_init_creates_list_with_one_node();
-    test_list_insert_null_list_creates_list();
     test_list_insert_at_end_appends();
     test_list_len_returns_correct_length();
     test_list_get_returns_correct_value();

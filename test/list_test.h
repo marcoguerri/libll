@@ -23,10 +23,7 @@
 #ifndef __LIST_TEST__
 #define __LIST_TEST__
 
-#include "list.h"
-
 void test_list_init_creates_list_with_one_node();
-void test_list_insert_null_list_creates_list();
 void test_list_insert_at_end_appends();
 void test_list_len_returns_correct_length();
 void test_list_get_returns_correct_value();

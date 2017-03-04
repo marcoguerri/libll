@@ -24,8 +24,8 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "list.h"
-#include "common.h"
+#include <libads/list.h>
+#include <libads/common.h>
 
 #define ADS_PRINT_BUFF_SIZE             16
 #define ADS_REALLOC_THRESHOLD           8
@@ -35,7 +35,7 @@
  * @brief Frees a node and associated dynamically allocated memory
  */
 void 
-ads_free_node(ads_list_node_t* ptr_node)
+_ads_list_free_node(ads_list_node_t* ptr_node)
 {
     free(ptr_node->data->payload);
     free(ptr_node->data);
@@ -43,21 +43,36 @@ ads_free_node(ads_list_node_t* ptr_node)
 }
 
 
-/* Initializes a new root node */
-ads_list_node_t*
+/**
+ * @brief Initializes a new list with a single root node
+ * @param payload Payload of the root node
+ * @param Size of each data element within the list
+ */
+ads_list_t*
 ads_list_init(void *payload, size_t size)
 {
     if(payload == NULL || size <= 0)
         return NULL;
 
+    ads_list_t* ptr_list = (ads_list_t*)malloc(sizeof(ads_list_t));
+    if(ptr_list == NULL)
+    {
+        perror("malloc:");
+        goto err_list;
+    }
+    ptr_list->element_size = size;
+    ads_list_node_t* ptr_node = (ads_list_node_t*)malloc(sizeof(ads_list_node_t));
+    if(ptr_node == NULL)
+    {
+        perror("malloc:");
+        goto err_node;
+    }
     ads_list_data_t *ptr_data = (ads_list_data_t*)malloc(sizeof(ads_list_data_t));
     if(ptr_data == NULL)
     {
         perror("malloc");
         goto err_data;
     }
-
-    ptr_data->size = size;
     ptr_data->payload = (void*)malloc(size);
     if(ptr_data->payload == NULL)
     {
@@ -66,49 +81,45 @@ ads_list_init(void *payload, size_t size)
     }
 
     memcpy(ptr_data->payload, payload, size);
-
-    ads_list_node_t *ptr_node = (ads_list_node_t*)malloc(sizeof(ads_list_node_t));
-    if(ptr_node == NULL) 
-    {
-        perror("malloc");
-        goto err_node;
-    
-    }
     ptr_node->data = ptr_data;
     ptr_node->next = NULL;
     ptr_node->prev = NULL;
+    ptr_list->root = ptr_node;
 
     assert(memcmp(payload, ptr_node->data->payload, size) == 0);
     assert(ptr_node->next == NULL);
     assert(ptr_node->prev == NULL);
 
-    return ptr_node;
+    return ptr_list;
 
-err_node:
-    free(ptr_node);
 err_payload:
     free(ptr_data->payload); 
 err_data:
     free(ptr_data);
+err_node:
+    free(ptr_node);
+err_list:
+    free(ptr_list);
     return NULL;
 }
 
 
 char*
-ads_list_print(ads_list_node_t *root, int (*print_payload)(void*, char*))
+ads_list_print(ads_list_t *ptr_list, int (*print)(void*, char*))
 {
     size_t curr_buff_size = ADS_PRINT_BUFF_SIZE;
     char *buff = (char*)malloc(sizeof(char)*ADS_PRINT_BUFF_SIZE);
     memset(buff, 0, ADS_PRINT_BUFF_SIZE);
 
-    if(print_payload == NULL)
+    if(print == NULL)
         return NULL;
 
     int written = 0;
     size_t buff_ptr = 0;
+    ads_list_node_t* root = ptr_list->root;
     while(root != NULL)
     {
-        written =  (*print_payload)(root->data->payload, buff + buff_ptr);
+        written =  (*print)(root->data->payload, buff + buff_ptr);
         if(written == -1)
         {
             free(buff);
@@ -137,15 +148,14 @@ ads_list_print(ads_list_node_t *root, int (*print_payload)(void*, char*))
 
 
 /**
- * @brief free root node and all those following
- * @param root Root node. This might not be necessarily the root of the list.
- * All the nodes following root, including root, will be freed
+ * @brief Frees all nodes in the list
+ * @param ptr_list Pointer to the list
  */
 void
-ads_list_destroy(ads_list_node_t *root)
+ads_list_destroy(ads_list_t *ptr_list)
 {
-    /* root might not be the root of the list. In this case, set the next pointer
-     * of the previous node to NULL as root will be freed */
+    ads_list_node_t* root = ptr_list->root;
+
     if(root->prev != NULL)
         root->prev->next = NULL;
 
@@ -160,14 +170,16 @@ ads_list_destroy(ads_list_node_t *root)
 }
 
 /**
- * Returns the size of the list starting by the node passed as argument,
- * which might not be the root. TODO: Consider improving by keeping temporary
- * counters.
+ * @brief Returns the size of the list
  */
 size_t 
-ads_list_len(ads_list_node_t* root)
+ads_list_len(ads_list_t* ptr_list)
 {
     size_t len = 0;
+    if(ptr_list == NULL)
+        return 0;
+
+    ads_list_node_t* root = ptr_list->root;
     while(root != NULL)
     {
         ++len;
@@ -177,42 +189,46 @@ ads_list_len(ads_list_node_t* root)
 }
 
 /*
- * @brief Inserts a new node in position pos starting from ptr_root. 
- * @param ptr_root Pointer to the root of the list. If null, a new list is initialized
- * @param pos Position (0-indexed) where to add the new node.
- * @return Pointer to the new list root or NULL upon failure. When returning
+ * @brief Inserts a new node in position pos
+ * @param ptr_list Pointer to the list. If null, a new list is initialized
+ * @param pos Position, indexed from 0, where to add the new node
+ * @return Pointer to the new list or NULL upon failure. When returning
  * NULL the old list is NOT destroyed.
  */
-ads_list_node_t*
-ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t pos)
+ads_list_t*
+ads_list_insert(ads_list_t* ptr_list, void *payload, size_t pos)
 {
-
-    if(ads_unlikely(ptr_root == NULL))
-        return ads_list_init(payload, size);
-    
-    if(payload == NULL || pos > ads_list_len(ptr_root))
+    if(payload == NULL || ptr_list == NULL || pos > ads_list_len(ptr_list))
         return NULL;
     
-    ads_list_node_t *ptr_prev = NULL, *ptr_pos = ptr_root;
+    
+    ads_list_node_t *ptr_prev = NULL, *ptr_pos = ptr_list->root;
     while(pos > 0)
     {
         ptr_prev = ptr_pos;
-        /* Checked pos against the length of the list, we can't go beyond the 
-         * last element */
+        /* Checked pos against the length of the list */
         assert(ptr_pos != NULL);
         ptr_pos = ptr_pos-> next;
         --pos;
     }
-
     ads_list_node_t *ptr_node = (ads_list_node_t*)malloc(sizeof(ads_list_node_t));
-    ads_list_data_t* ptr_data = (ads_list_data_t*)malloc(sizeof(ads_list_data_t));
-    ptr_data->payload = (void*)malloc(size);
-
-    
-    if(ptr_node == NULL || ptr_data == NULL || ptr_data->payload == NULL)
+    if(ptr_node == NULL)
     {
         perror("malloc");
-        goto err_node_data;
+        goto err_node;
+    }
+    ads_list_data_t* ptr_data = (ads_list_data_t*)malloc(sizeof(ads_list_data_t));
+    if(ptr_data == NULL)
+    {
+        perror("malloc");
+        goto err_data;
+    }
+    ptr_data->payload = (void*)malloc(ptr_list->element_size);
+    if(ptr_data->payload == NULL)
+    
+    {
+        perror("malloc");
+        goto err_payload;
     }
 
     if(ptr_pos == NULL) 
@@ -227,11 +243,11 @@ ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t po
     {
         /* Beginning of the list */
         assert(ptr_node != NULL && ptr_pos != NULL);
-        ptr_node->next = ptr_root;
+        ptr_node->next = ptr_list->root;
         ptr_node->prev = NULL;
         ptr_pos->prev = ptr_node;
-        /* The node just allocated is the new root which will be returned */
-        ptr_root = ptr_node;
+        /* The node just allocated is the new root  */
+        ptr_list->root = ptr_node;
     }
     else
     {  
@@ -242,32 +258,31 @@ ads_list_insert(ads_list_node_t* ptr_root, void *payload, size_t size, size_t po
         ptr_pos->prev = ptr_node;
         ptr_pos->prev->next = ptr_node;
     }
-
-    memcpy(ptr_data->payload, payload, size);
-    ptr_data->size = size;
+    memcpy(ptr_data->payload, payload, ptr_list->element_size);
     ptr_node->data = ptr_data;
-    assert(memcmp(payload, ptr_node->data->payload, size) == 0);
+    return ptr_list;
 
-    return ptr_root;
-
-err_node_data:
-    ads_free_node(ptr_node);
+err_payload:
+    free(ptr_node->data->payload);
+err_data:
+    free(ptr_node->data);
+err_node:
+    free(ptr_node);
     return NULL;
 }
 
 /**
  * @brief Deletes the first node which matches the payload passed as argument
  * @param payload Paylod to delete
- * @param size Size of the payload
  * @return The pointer to the new list
  */
-ads_list_node_t*
-ads_list_del(ads_list_node_t* ptr_root, void* payload, size_t size)
+ads_list_t*
+ads_list_del(ads_list_t* ptr_list, void* payload)
 {
-    ads_list_node_t *ptr_node = ptr_root;
+    ads_list_node_t *ptr_node = ptr_list->root;
     while(ptr_node != NULL) 
     {
-        if(memcmp(ptr_node->data->payload, payload, size) == 0)
+        if(memcmp(ptr_node->data->payload, payload, ptr_list->element_size) == 0)
         {
             if(ptr_node->prev == NULL)
             {
@@ -276,14 +291,14 @@ ads_list_del(ads_list_node_t* ptr_root, void* payload, size_t size)
                 {
                    /* First node is followed by at least one more node */
                    ptr_node->next->prev = NULL;
-                   ads_list_node_t* temp = ptr_node->next;
-                   ads_free_node(ptr_node);
-                   return temp;
+                   ptr_list->root = ptr_node->next;
+                   _ads_list_free_node(ptr_node);
+                   return ptr_list;
                 }
                 else
                 {
                     /* First node is the only one in the list */
-                    ads_free_node(ptr_node);
+                    _ads_list_free_node(ptr_node);
                     return NULL;
                 }
             }
@@ -295,40 +310,38 @@ ads_list_del(ads_list_node_t* ptr_root, void* payload, size_t size)
                     /* Node is followed by at least one more node */
                     ptr_node->next->prev = ptr_node->prev;
                     ptr_node->prev->next = ptr_node->next;
-                    ads_free_node(ptr_node);
+                    _ads_list_free_node(ptr_node);
 
                 }
                 else
                 { 
                     /* Node is the last in the list */
                     ptr_node->prev->next = NULL;
-                    ads_free_node(ptr_node);
+                    _ads_list_free_node(ptr_node);
                 }
-                return ptr_root;
+                return ptr_list;
             }
-
         }
         ptr_node = ptr_node->next;
     }
-
-    return ptr_root;
+    return ptr_list;
 }
 
 
 /**
- * @brief Returns a pointer to the first occurrence of payload in the list
- * @param ptr_root Pointer to root of the list
+ * @brief Returns a pointer to the first node with matching payload
+ * @param ptr_list Pointer to the list
  * @param payload Payload to be searched in the list
- * @return Pointer to the first node matching the payload or NULL if payload
+ * @return Pointer to the first node with matching payload or NULL if payload
  * is not found
  */
 ads_list_node_t*
-ads_list_search(ads_list_node_t* ptr_root, void* payload, size_t size)
+ads_list_search(ads_list_t* ptr_list, void* payload)
 {
-
+    ads_list_node_t* ptr_root = ptr_list->root;
     while(ptr_root != NULL)
     {
-        if(memcmp(ptr_root->data->payload, payload, size) == 0)
+        if(memcmp(ptr_root->data->payload, payload, ptr_list->element_size) == 0)
             return ptr_root;
         else
             ptr_root = ptr_root->next;
@@ -338,26 +351,67 @@ ads_list_search(ads_list_node_t* ptr_root, void* payload, size_t size)
 
 
 /**
- * @brief Returns a pointer to the payload of the n-th element of the list
- * @param ptr_root Pointer to root of the list
- * @param pos 0-indexed position of the element to return
- * @return Pointer to the payload of the n-th element of the list or NULL upon
- * failure
+ * @brief Returns a pointer to the node in position pos
+ * @param ptr_list Pointer to the list
+ * @param pos position, indexed from 0, of the element to be returned
+ * @return Pointer to node in position pos or NULL upon failure
  */
-void*
-ads_list_get(ads_list_node_t *ptr_root, size_t pos)
+ads_list_node_t*
+ads_list_node_get(ads_list_t *ptr_list, size_t pos)
 {
-
-    if(ptr_root == NULL || pos >= ads_list_len(ptr_root))
+    ads_list_node_t* ptr_root = ptr_list->root;
+    if(ptr_root == NULL || pos >= ads_list_len(ptr_list))
         return NULL;
     while(pos > 0)
     {
-        /* We checked pos against the length of the list, can't be null at this
-         * point */
+        /* pos was checked against the length of the list, can't be null at this point */
         assert(ptr_root != NULL);
         ptr_root = ptr_root->next;
         --pos;
     }
-    return ptr_root->data->payload;
+    return ptr_root;
 
+}
+
+/**
+ * @brief Returns the payload pointed to by a node
+ * @param ptr_node Pointer to the node
+ * @return Pointer to the payload of the node
+ */
+void*
+ads_list_node_payload(ads_list_node_t* ptr_node)
+{
+     
+    if(ptr_node == NULL || ptr_node->data == NULL)
+        return NULL;
+    else
+        return ptr_node->data->payload;
+}
+
+/**
+ * @brief Returns a pointer to the node which follows the one passed as paramter
+ * @param ptr_node Pointer to the current node
+ * @return Pointer to the next node, NULL if the node is last
+ */
+ads_list_node_t*
+ads_list_node_next(ads_list_node_t* ptr_node)
+{
+    if(ptr_node == NULL)
+        return NULL;
+    else
+        return ptr_node->next;
+}
+
+/**
+ * @brief Returns a pointer to the node which comes before the one passed as parameter
+ * @param ptr_node Pointer to the current node
+ * @return Pointer to the previous node, NULL if the node is the root
+ */
+ads_list_node_t*
+ads_list_node_prev(ads_list_node_t* ptr_node)
+{
+    if(ptr_node == NULL)
+        return NULL;
+    else
+        return ptr_node->prev;
 }
