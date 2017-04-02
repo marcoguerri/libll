@@ -1,13 +1,8 @@
 ### libads ###
-libads implements commonly used data structures and algorithms.
-
-The following data structures are supported:
-
-  * Doubly linked list
-  * Max-heap and min-heap
-
-The structures are currently not thread safe.
-
+libads implements commonly used data structures and algorithms. Only doubly linked
+list is available for the moment, more data structures are being worked on.
+The library is thread safe as long as data structure instances are private to each
+thread.
 
 ### License ###
 `libads` is licensed under the MIT License (MIT).
