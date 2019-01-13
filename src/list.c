@@ -154,6 +154,10 @@ ads_list_print(ads_list_t *ptr_list, int (*print)(void*, char*))
 void
 ads_list_destroy(ads_list_t *ptr_list)
 {
+
+    if(!ptr_list) {
+        return;
+    }
     ads_list_node_t* root = ptr_list->root;
 
     if(root->prev != NULL)
