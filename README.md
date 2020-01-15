@@ -1,7 +1,5 @@
 ### libads ###
-libads implements commonly used data structures and algorithms. Only doubly linked
-list is available for the moment, more data structures are being worked on.
-The library is thread safe as long as data structure instances are private to each
+libads is an implementation of a doubly linked-list. The library is thread safe as long as data structure instances are private to each
 thread.
 
 ### License ###
