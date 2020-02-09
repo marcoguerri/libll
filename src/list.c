@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <libads/list.h>
-#include <libads/common.h>
 
 #define ADS_PRINT_BUFF_SIZE             16
 #define ADS_REALLOC_THRESHOLD           8
