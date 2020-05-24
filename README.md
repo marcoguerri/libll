@@ -36,8 +36,8 @@ main() {
 
 Compile with:
 ```
-$ gcc main.c -L lib -l ads -I$(pwd)/include/libads -static -o libads_test
-$ ./libads_test 
+$ gcc main.c -L lib -l ads -I$(pwd)/include/libads -o libads_test
+$ LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/lib ./libads_test 
 List representation: 20 30
 ```
 
