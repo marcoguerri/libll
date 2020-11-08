@@ -1,21 +1,21 @@
-### libads
-libads is an implementation of a doubly linked-list. The library is thread safe as long as data structure instances are private to each
+### libll
+libll is an implementation of a doubly linked-list. The library is thread safe as long as data structure instances are private to each
 thread.
 
 ### Usage
 Clone the library:
 ```
-git clone https://github.com/marcoguerri/libads.git
+git clone https://github.com/marcoguerri/libll.git
 ```
 
 Example of statically linked build:
 
 ```C
-#include "list.h"
+#include "ll.h"
 
 
 int
-print_integer_payload(void *ptr, char *str)
+print(void *ptr, char *str)
 {
     return sprintf(str,"%d ", *((uint8_t*)ptr));
 }
@@ -25,19 +25,19 @@ main() {
     int a = 20;
     int b = 30;
     char *list_repr;
-    ads_list_t* list_int = NULL;
-    list_int = ads_list_init(&a, sizeof(int));
-    list_int = ads_list_insert(list_int, &b, ads_list_len(list_int));
-    list_repr = ads_list_print(list_int, print_integer_payload);
+    ll_t* list_int = NULL;
+    list_int = ll_init(&a, sizeof(int));
+    list_int = ll_insert(list_int, &b, ll_len(list_int));
+    list_repr = ll_print(list_int, print);
     printf("List representation: %s\n", list_repr);
-    ads_list_destroy((void*)list_int);
+    ll_destroy((void*)list_int);
 }
 ```
 
 Compile with:
 ```
-$ gcc main.c -L lib -l ads -I$(pwd)/include/libads -o libads_test
-$ LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/lib ./libads_test 
+$ gcc main.c -L lib -l ll -I$(pwd)/include/ll -o ll_test
+$ LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/lib ./ll_test 
 List representation: 20 30
 ```
 
@@ -46,7 +46,7 @@ For dynamic linkage, see how [tcpinfo](https://github.com/marcoguerri/tcpinfo) u
 
 
 ### License
-`libads` is licensed under the MIT License (MIT).
+`libll` is licensed under the MIT License (MIT).
 
 ```
 Copyright (C) 2016 Marco Guerri <marco.guerri.dev@fastmail.com>

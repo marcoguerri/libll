@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <libads/list.h>
+#include <ll/ll.h>
 #include "test.h"
 
 int
@@ -37,12 +37,12 @@ void
 test_list_init_creates_list_with_one_node()
 {
     uint8_t data = 100;
-    ads_list_t *ptr_list =  ads_list_init(&data, sizeof(uint8_t));
+    ll_t *ptr_list =  ll_init(&data, sizeof(uint8_t));
     _assert(ptr_list != NULL);
     _assert(ptr_list->root != NULL);
     _assert(ptr_list->root->next == NULL && ptr_list->root->prev == NULL);
     _assert(*((uint8_t*)ptr_list->root->data->payload) == 100);
-    ads_list_destroy(ptr_list);
+    ll_destroy(ptr_list);
 }
 
 void 
@@ -52,17 +52,17 @@ test_list_insert_at_end_appends()
     uint8_t i, max_element = 20;
     char list_repr_test[512];
 
-    ads_list_t* ptr_list =  ads_list_init(&data, sizeof(int));
+    ll_t* ptr_list =  ll_init(&data, sizeof(int));
    
     for(i = 0; i < max_element; ++i)
         str_len += snprintf(list_repr_test + str_len, 512 - str_len, "%d ", i);
     for(i = 1; i < max_element; ++i)
-        ptr_list = ads_list_insert(ptr_list, &i, i);
+        ptr_list = ll_insert(ptr_list, &i, i);
     
-    char *list_repr = ads_list_print(ptr_list, print_integer_payload);
+    char *list_repr = ll_print(ptr_list, print_integer_payload);
     _assert(strcmp(list_repr, list_repr_test) == 0);
     free(list_repr);
-    ads_list_destroy(ptr_list);
+    ll_destroy(ptr_list);
 }
 
 
@@ -72,24 +72,24 @@ test_list_len_returns_correct_length()
     uint8_t data = 102;
     uint8_t i = 0, max_element = 100;
 
-    _assert(ads_list_len(NULL) == 0);
+    _assert(ll_len(NULL) == 0);
     
-    ads_list_t *ptr_list =  ads_list_init(&data, sizeof(uint8_t));
-    _assert(ads_list_len(ptr_list) == 1);
+    ll_t *ptr_list =  ll_init(&data, sizeof(uint8_t));
+    _assert(ll_len(ptr_list) == 1);
 
     for(i = 1; i < max_element; ++i)
     {
         /* Repeatedly inserting at the beginning */
-        ptr_list = ads_list_insert(ptr_list, &data, 0);
-        if(ads_list_len(ptr_list) != i + 1)
+        ptr_list = ll_insert(ptr_list, &data, 0);
+        if(ll_len(ptr_list) != i + 1)
         {
             _assert(0);
-            ads_list_destroy(ptr_list);
+            ll_destroy(ptr_list);
             return;
         }
     }
     _assert(1);
-    ads_list_destroy(ptr_list);
+    ll_destroy(ptr_list);
     return;
 }
 
@@ -98,22 +98,22 @@ void test_list_get_returns_correct_value()
 {
     uint8_t data = 0, i, max_element = 100;
     
-    ads_list_t* ptr_list =  ads_list_init(&data, sizeof(uint8_t));
+    ll_t* ptr_list =  ll_init(&data, sizeof(uint8_t));
 
     for(i = 1; i < max_element; ++i)
-        ptr_list = ads_list_insert(ptr_list, &i, i);
+        ptr_list = ll_insert(ptr_list, &i, i);
     for(i = 0; i < max_element; ++i)
     {
-        ads_list_node_t* ptr_node = ads_list_node_get(ptr_list, i);
-        if(*((uint8_t*)ads_list_node_payload(ptr_node)) != i)
+        ll_node_t* ptr_node = ll_node_get(ptr_list, i);
+        if(*((uint8_t*)ll_node_payload(ptr_node)) != i)
         {
             _assert(0);
-            ads_list_destroy(ptr_list);
+            ll_destroy(ptr_list);
             return;
         }
     }
     _assert(1);
-    ads_list_destroy(ptr_list);
+    ll_destroy(ptr_list);
     return;
 }
 
@@ -121,10 +121,10 @@ void
 test_list_del_deletes_root()
 {
     uint8_t data = 100;
-    ads_list_t* ptr_list =  ads_list_init(&data, sizeof(uint8_t));
-    ptr_list = ads_list_del(ptr_list, &data);
+    ll_t* ptr_list =  ll_init(&data, sizeof(uint8_t));
+    ptr_list = ll_del(ptr_list, &data);
     _assert(ptr_list == NULL);
-    _assert(ads_list_len(ptr_list) == 0);
+    _assert(ll_len(ptr_list) == 0);
 }
 
 
@@ -132,16 +132,16 @@ void
 test_list_del_deletes_at_the_end()
 {
     uint8_t data_a = 100, data_b = 101, data_c = 102;
-    ads_list_t *ptr_list = ads_list_init(&data_a, sizeof(uint8_t));
-    ptr_list = ads_list_insert(ptr_list, &data_b, ads_list_len(ptr_list));
-    ptr_list = ads_list_insert(ptr_list, &data_c, ads_list_len(ptr_list));
+    ll_t *ptr_list = ll_init(&data_a, sizeof(uint8_t));
+    ptr_list = ll_insert(ptr_list, &data_b, ll_len(ptr_list));
+    ptr_list = ll_insert(ptr_list, &data_c, ll_len(ptr_list));
     
-    ptr_list = ads_list_del(ptr_list, &data_c);
-    _assert(ads_list_len(ptr_list) == 2);
-    _assert(ads_list_search(ptr_list, &data_b) != NULL);
-    _assert(ads_list_search(ptr_list, &data_a) != NULL);
+    ptr_list = ll_del(ptr_list, &data_c);
+    _assert(ll_len(ptr_list) == 2);
+    _assert(ll_search(ptr_list, &data_b) != NULL);
+    _assert(ll_search(ptr_list, &data_a) != NULL);
 
-    ads_list_destroy(ptr_list);
+    ll_destroy(ptr_list);
 }
 
 
@@ -150,14 +150,14 @@ test_list_del_deletes_in_the_middle()
 {
 
     uint8_t data_a = 100, data_b = 101, data_c = 102;
-    ads_list_t *ptr_list = ads_list_init(&data_a, sizeof(uint8_t));
-    ptr_list = ads_list_insert(ptr_list, &data_b, ads_list_len(ptr_list));
-    ptr_list = ads_list_insert(ptr_list, &data_c, ads_list_len(ptr_list));
+    ll_t *ptr_list = ll_init(&data_a, sizeof(uint8_t));
+    ptr_list = ll_insert(ptr_list, &data_b, ll_len(ptr_list));
+    ptr_list = ll_insert(ptr_list, &data_c, ll_len(ptr_list));
     
-    ptr_list = ads_list_del(ptr_list, &data_c);
-    _assert(ads_list_len(ptr_list) == 2);
-    _assert(ads_list_search(ptr_list, &data_b) != NULL);
-    _assert(ads_list_search(ptr_list, &data_a) != NULL);
+    ptr_list = ll_del(ptr_list, &data_c);
+    _assert(ll_len(ptr_list) == 2);
+    _assert(ll_search(ptr_list, &data_b) != NULL);
+    _assert(ll_search(ptr_list, &data_a) != NULL);
 
-    ads_list_destroy(ptr_list);
+    ll_destroy(ptr_list);
 }

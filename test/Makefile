@@ -23,7 +23,7 @@ SOURCES := list_test.c test.c
 OBJECTS := $(SOURCES:.c=.o)
 
 CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -L../lib -I../include
-LDLIBS = -lads
+LDLIBS = -lll
 
 all: run_tests
 

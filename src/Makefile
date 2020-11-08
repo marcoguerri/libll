@@ -26,13 +26,13 @@ OBJECTS := $(SOURCES:.c=.o)
 CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -I../include -g
 LDFLAGS = -shared
 
-all: libads.so
+all: libll.so
 
-libads.a: $(OBJECTS)
+libll.a: $(OBJECTS)
 	install -m 755 -d ../lib
 	ar rcs ../lib/$@ $(OBJECTS)
 
-libads.so: $(OBJECTS)
+libll.so: $(OBJECTS)
 	install -m 755 -d ../lib
 	$(CC) $(OBJECTS) -o ../lib/$@ $(LDLIBS) $(LDFLAGS) $(CFLAGS)
 
@@ -41,7 +41,7 @@ libads.so: $(OBJECTS)
 
 clean:
 	rm -f $(OBJECTS)
-	rm -f ../lib/libads.so
-	rm -f ../lib/libads.a
+	rm -f ../lib/ll.so
+	rm -f ../lib/ll.a
 
 .PHONY: clean

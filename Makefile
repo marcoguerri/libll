@@ -22,7 +22,7 @@ all clean:
 	$(MAKE) -C src $@
 	$(MAKE) -C test $@
 
-libads.so libads.a:
+libll.so ll.a:
 	$(MAKE) -C src $@
 
 tests run_tests:
