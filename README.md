@@ -36,7 +36,7 @@ main() {
 
 Compile with:
 ```
-$ gcc main.c -L lib -l ll -I$(pwd)/include/ll -o ll_test
+$ gcc main.c -L lib -l ll -I$(pwd)/include/libll -o ll_test
 $ LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$(pwd)/lib ./ll_test 
 List representation: 20 30
 ```
