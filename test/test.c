@@ -32,6 +32,10 @@ int main()
     test_list_del_deletes_root();
     test_list_del_deletes_at_the_end();
     test_list_del_deletes_in_the_middle();
+    test_list_del_nullptr();
+    test_list_search_nullptr();
+    test_list_print_nullptr();
+    test_list_destroy_nullptr();
     return 0;
 
 }

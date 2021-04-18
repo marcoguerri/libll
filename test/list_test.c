@@ -161,3 +161,27 @@ test_list_del_deletes_in_the_middle()
 
     ll_destroy(ptr_list);
 }
+
+void 
+test_list_del_nullptr() {
+    ll_destroy(NULL);
+    _assert(1);
+}
+
+void 
+test_list_search_nullptr() {
+    ll_search(NULL, NULL);
+    _assert(1);
+}
+
+void 
+test_list_print_nullptr() {
+    ll_print(NULL, NULL);
+    _assert(1);
+}
+
+void
+test_list_destroy_nullptr() {
+    ll_destroy(NULL);
+    _assert(1);
+}

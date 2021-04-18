@@ -30,6 +30,9 @@ void test_list_get_returns_correct_value();
 void test_list_del_deletes_root();
 void test_list_del_deletes_at_the_end();
 void test_list_del_deletes_in_the_middle();
-
+void test_list_del_nullptr();
+void test_list_search_nullptr();
+void test_list_print_nullptr();
+void test_list_destroy_nullptr();
 
 #endif

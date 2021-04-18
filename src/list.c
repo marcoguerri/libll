@@ -36,6 +36,9 @@
 void 
 _ll_free_node(ll_node_t* ptr_node)
 {
+    if(ptr_node == NULL) {
+        return;
+    }
     free(ptr_node->data->payload);
     free(ptr_node->data);
     free(ptr_node);
@@ -107,11 +110,17 @@ char*
 ll_print(ll_t *ptr_list, int (*print)(void*, char*))
 {
     size_t curr_buff_size = LLIST_PRINT_BUFF_SIZE;
-    char *buff = (char*)malloc(sizeof(char)*LLIST_PRINT_BUFF_SIZE);
-    memset(buff, 0, LLIST_PRINT_BUFF_SIZE);
 
-    if(print == NULL)
+    if(ptr_list == NULL || print == NULL) {
         return NULL;
+    }
+
+    char *buff = (char*)malloc(sizeof(char)*LLIST_PRINT_BUFF_SIZE);
+    if(buff == NULL) {
+	perror("malloc:");
+	goto free_buff;
+    }
+    memset(buff, 0, LLIST_PRINT_BUFF_SIZE);
 
     int written = 0;
     size_t buff_ptr = 0;
@@ -143,6 +152,10 @@ ll_print(ll_t *ptr_list, int (*print)(void*, char*))
         root = root->next;
     }
     return buff;
+
+free_buff:
+    free(buff);
+    return NULL;
 }
 
 
@@ -282,6 +295,11 @@ err_node:
 ll_t*
 ll_del(ll_t* ptr_list, void* payload)
 {
+ 
+    if(ptr_list == NULL || payload == NULL) {
+        return NULL;
+    }
+
     ll_node_t *ptr_node = ptr_list->root;
     while(ptr_node != NULL) 
     {
@@ -341,6 +359,9 @@ ll_del(ll_t* ptr_list, void* payload)
 ll_node_t*
 ll_search(ll_t* ptr_list, void* payload)
 {
+    if(ptr_list == NULL || payload == NULL) {
+        return NULL;
+    }
     ll_node_t* ptr_root = ptr_list->root;
     while(ptr_root != NULL)
     {
@@ -362,6 +383,9 @@ ll_search(ll_t* ptr_list, void* payload)
 ll_node_t*
 ll_node_get(ll_t *ptr_list, size_t pos)
 {
+    if(ptr_list == NULL) {
+        return NULL;
+    }
     ll_node_t* ptr_root = ptr_list->root;
     if(ptr_root == NULL || pos >= ll_len(ptr_list))
         return NULL;
