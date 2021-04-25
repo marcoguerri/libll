@@ -22,10 +22,16 @@
 SOURCES := list_test.c test.c
 OBJECTS := $(SOURCES:.c=.o)
 
-CFLAGS = -Wall -O0 -fPIC -D_GNU_SOURCE -L../lib -I../include
+CFLAGS = -Wall -O0  -D_GNU_SOURCE -L../lib -I../include
 LDLIBS = -lll
 
-all: run_tests
+ifneq ("$(wildcard /usr/bin/valgrind)", "")
+	TEST_LEAK=1
+else
+	TEST_LEAK=0
+endif
+
+all: run_tests leak
 
 %.o: %.cc
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -35,11 +41,13 @@ tests: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDLIBS) $(CFLAGS)
 
 run_tests: tests
-	@export LD_LIBRARY_PATH=../lib && ./tests
+	@LD_LIBRARY_PATH=../lib ./tests
 
-	
+leak: tests
+	@test $(TEST_LEAK) -eq 1 && LD_LIBRARY_PATH=../lib valgrind --track-origins=yes --leak-check=yes ./tests || echo "please install valgrind to test for leaks"
+
 clean:
 	rm -f $(OBJECTS)
 	rm -f tests
 
-.PHONY: clean
+.PHONY: clean leak

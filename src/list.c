@@ -75,27 +75,33 @@ ll_init(void *payload, size_t size)
         perror("malloc");
         goto err_data;
     }
-    ptr_data->payload = (void*)malloc(size);
-    if(ptr_data->payload == NULL)
+    void *ptr_payload = (void*)malloc(size);
+    if(ptr_payload == NULL)
     {
         perror("malloc");
         goto err_payload;
     }
 
-    memcpy(ptr_data->payload, payload, size);
+    memcpy(ptr_payload, payload, size);
+    ptr_data->payload = ptr_payload;
     ptr_node->data = ptr_data;
     ptr_node->next = NULL;
     ptr_node->prev = NULL;
     ptr_list->root = ptr_node;
 
-    assert(memcmp(payload, ptr_node->data->payload, size) == 0);
+    assert(ptr_node != NULL);
+    assert(ptr_node->data != NULL);
+    assert(ptr_node->data->payload != NULL);
+    
+    int m = memcmp(payload, ptr_node->data->payload, size);
+    assert(m==0);
     assert(ptr_node->next == NULL);
     assert(ptr_node->prev == NULL);
 
     return ptr_list;
 
 err_payload:
-    free(ptr_data->payload); 
+    free(ptr_payload); 
 err_data:
     free(ptr_data);
 err_node:
@@ -167,12 +173,13 @@ void
 ll_destroy(ll_t *ptr_list)
 {
 
-    if(!ptr_list) {
+    if(ptr_list == NULL) {
         return;
     }
     ll_node_t* root = ptr_list->root;
 
-    if(root->prev != NULL)
+    /* Free the list staring from root onwards */
+    if(root != NULL && root->prev != NULL)
         root->prev->next = NULL;
 
     while(root != NULL)
@@ -183,6 +190,7 @@ ll_destroy(ll_t *ptr_list)
         free(root);
         root = next;
     }
+    free(ptr_list);
 }
 
 /**
@@ -320,7 +328,8 @@ ll_del(ll_t* ptr_list, void* payload)
                 {
                     /* First node is the only one in the list */
                     _ll_free_node(ptr_node);
-                    return NULL;
+		    ptr_list->root = NULL;
+                    return ptr_list;
                 }
             }
             else

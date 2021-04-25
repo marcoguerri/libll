@@ -23,6 +23,7 @@
 #ifndef __LIST_TEST__
 #define __LIST_TEST__
 
+void test_list_init_list_destroy();
 void test_list_init_creates_list_with_one_node();
 void test_list_insert_at_end_appends();
 void test_list_len_returns_correct_length();

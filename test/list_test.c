@@ -33,6 +33,15 @@ print_integer_payload(void *ptr, char *str)
     return sprintf(str,"%d ", *((uint8_t*)ptr));
 }
 
+
+void 
+test_list_init_list_destroy() {
+    uint8_t data = 100;
+    ll_t *ptr_list =  ll_init(&data, sizeof(uint8_t));
+    ll_destroy(ptr_list);
+    _assert(1);
+}
+
 void 
 test_list_init_creates_list_with_one_node()
 {
@@ -123,8 +132,8 @@ test_list_del_deletes_root()
     uint8_t data = 100;
     ll_t* ptr_list =  ll_init(&data, sizeof(uint8_t));
     ptr_list = ll_del(ptr_list, &data);
-    _assert(ptr_list == NULL);
     _assert(ll_len(ptr_list) == 0);
+    ll_destroy(ptr_list);
 }
 
 
