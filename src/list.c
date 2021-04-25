@@ -82,7 +82,8 @@ ll_init(void *payload, size_t size)
         goto err_payload;
     }
 
-    memcpy(ptr_payload, payload, size);
+    memcpy(ptr_payload, (char *)payload, size);
+
     ptr_data->payload = ptr_payload;
     ptr_node->data = ptr_data;
     ptr_node->next = NULL;
@@ -92,9 +93,6 @@ ll_init(void *payload, size_t size)
     assert(ptr_node != NULL);
     assert(ptr_node->data != NULL);
     assert(ptr_node->data->payload != NULL);
-    
-    int m = memcmp(payload, ptr_node->data->payload, size);
-    assert(m==0);
     assert(ptr_node->next == NULL);
     assert(ptr_node->prev == NULL);
 
@@ -282,7 +280,7 @@ ll_insert(ll_t* ptr_list, void *payload, size_t pos)
         ptr_pos->prev = ptr_node;
         ptr_pos->prev->next = ptr_node;
     }
-    memcpy(ptr_data->payload, payload, ptr_list->element_size);
+    memcpy(ptr_data->payload, (char *)payload, ptr_list->element_size);
     ptr_node->data = ptr_data;
     return ptr_list;
 
