@@ -285,11 +285,10 @@ ll_insert(ll_t* ptr_list, void *payload, size_t pos)
     return ptr_list;
 
 err_payload:
-    free(ptr_node->data->payload);
+    free(ptr_data);
 err_data:
-    free(ptr_node->data);
-err_node:
     free(ptr_node);
+err_node:
     return NULL;
 }
 

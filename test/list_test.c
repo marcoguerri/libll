@@ -48,9 +48,9 @@ test_list_init_creates_list_with_one_node()
     uint8_t data = 100;
     ll_t *ptr_list =  ll_init(&data, sizeof(uint8_t));
     _assert(ptr_list != NULL);
-    _assert(ptr_list->root != NULL);
-    _assert(ptr_list->root->next == NULL && ptr_list->root->prev == NULL);
-    _assert(*((uint8_t*)ptr_list->root->data->payload) == 100);
+    _assert(ptr_list && ptr_list->root != NULL);
+    _assert(ptr_list && ptr_list->root && ptr_list->root->next == NULL && ptr_list->root->prev == NULL);
+    _assert(ptr_list && ptr_list->root && ptr_list->root->data && *((uint8_t*)ptr_list->root->data->payload) == 100);
     ll_destroy(ptr_list);
 }
 
