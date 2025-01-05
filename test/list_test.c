@@ -61,7 +61,7 @@ test_list_insert_at_end_appends()
     uint8_t i, max_element = 20;
     char list_repr_test[512];
 
-    ll_t* ptr_list =  ll_init(&data, sizeof(int));
+    ll_t* ptr_list =  ll_init(&data, sizeof(uint8_t));
    
     for(i = 0; i < max_element; ++i)
         str_len += snprintf(list_repr_test + str_len, 512 - str_len, "%d ", i);
